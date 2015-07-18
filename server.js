@@ -23,6 +23,22 @@ var port = process.env.PORT || 3005;
 // all of the /api calls
 app.use('/api' , require('./routes/apiRoute') );
 
+// error handle
+app.use(function( err, req, res, next ){
+	var result = {};
+	if( res.status === 500 ){
+		result.status = "error";
+		result.msg = err.message || "server side error";
+	}else if( res.status === 401){
+		result.status = "fail";
+		result.msg = err.message || "authenticate failed";
+	}else if( res.status === 400){
+		result.status = "fail";
+		result.msg = err.message || "Can not find the resources";
+	}	
+	res.json( result );
+});
+
 
 
 app.listen(port);
