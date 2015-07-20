@@ -146,7 +146,9 @@ router.route('/forget-password/:user_email')
             User.update({
                 email: req.params.user_email
             }, {
-                password: hash
+                $set: {
+                    password: hash
+                }
             }, function(err, raw) {
                 if (err) {
                     res.status = 500;
@@ -162,8 +164,30 @@ router.route('/forget-password/:user_email')
         });
     });
 
+router.route('/reset-password/:user_id')
+    .post(AuthService.checkToken, function(req, res, next) {
+        var salt = bcrypt.genSaltSync(10);
+        var hash = bcrypt.hashSync(req.body.password, salt);
+        User.update({
+            _id: req.params.user_id
+        }, {
+            $set: {
+                password: hash
+            }
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                return next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        })
+    });
+
+//user logout
 router.route('/logout')
-    .delete(AuthService.checkToken,function(req, res, next) {
+    .delete(AuthService.checkToken, function(req, res, next) {
         Token.remove({
             'user_id': req.body.user_id
         }, function(err) {
@@ -177,16 +201,258 @@ router.route('/logout')
         });
     });
 
-router.route('/users/:user_id')
-    // get the user with that id
-    .get(function(req, res) {
-        User.findById(req.params.user_id, function(err, user) {
+//admin get all users
+
+router.route('/users')
+    .get(AuthService.checkAdminRole, function(req, res, next) {
+        User.find({}, function(err, users) {
             if (err) {
-                console.log(err);
-                res.send(err);
+                res.status = 500;
+                return next(err);
             }
-            res.json(user);
+            var result = {};
+            result.status = "success";
+            result.data = {
+                users: users
+            }
+            res.json(result);
         });
     });
 
+router.route('/users/:user_id')
+    .delete(AuthService.checkAdminRole, function(req, res, next) {
+        console.log('remove');
+        User.remove({
+            _id: req.params.user_id
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                return next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    })
+    .put(AuthService.checkToken, function(req, res, next) {
+        User.update({
+            _id: req.params.user_id
+        }, {
+            $set: {
+                email: req.body.email,
+                id_receive_msg: id_receive_msg
+            }
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                return next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        })
+    });
+
+/************************* Order API ***************************************/
+
+//admin create an order for any user
+router.route('/orders')
+    //add one order
+    .post(AuthService.checkAdminRole, function(req, res, next) {
+        var order = new Order();
+        order.user_id = req.body.user_id;
+        order.product_id = req.body.product_id;
+        order.order_num = req.body.order_num;
+        order.order_unit = req.body.order_unit;
+        order.order_note = req.body.order_note;
+        order.save(function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    });
+//admin update user's order
+router.route('/orders/:order_id')
+    .put(AuthService.checkAdminRole, function(req, res, next) {
+        Order.update({
+            _id: req.params.order_id
+        }, {
+            $set: {
+                user_id: req.body.user_id,
+                product_id: req.body.product_id,
+                order_num: req.body.order_num,
+                order_unit: req.body.order_unit,
+                order_note: req.body.order_note
+            }
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    })
+    //admin delete orders
+    .delete(AuthService.checkAdminRole, function(req, res, next) {
+        Order.remove({
+            _id: req.params.order_id
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    });
+
+router.route('/users/:user_id/orders')
+    .post(AuthService.checkToken, function(req, res, next) {
+        var order = new Order();
+        order.user_id = req.params.user_id;
+        order.product_id = req.body.product_id;
+        order.order_num = req.body.order_num;
+        order.order_unit = req.body.order_unit;
+        order.order_note = req.body.order_note;
+        order.save(function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    })
+
+router.route('/users/:user_id/orders/:order_id')
+    .get(AuthService.checkToken, function(req, res, next) {
+        Order.findOne({
+            _id: req.params.order_id,
+            user_id: req.params.user_id
+        }, function(err, order) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            result.data = {
+                order: order
+            }
+            res.json(result);
+        });
+    })
+    .delete(AuthService.checkToken, function(req, res, next) {
+        Order.remove({
+            _id: req.params.order_id,
+            user_id: req.params.user_id
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        })
+    })
+    .put(AuthService.checkToken, function(req, res, next) {
+        Order.update({
+            user_id: req.params.user_id,
+            _id: req.params.order_id
+        }, {
+            $set: {
+                product_id: req.body.product_id,
+                order_num: req.body.order_num,
+                order_unit: req.body.order_unit,
+                order_note: req.body.order_note
+            }
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    })
+
+/************************* Product API ***************************************/
+router.route('/products')
+    .get(function(req, res, next) {
+        Product.find({}, function(err, products) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            result.data = {
+                products: products
+            }
+            res.json(result);
+        })
+    })
+    .post(AuthService.checkAdminRole, function(req, res, next) {
+        var product = new Product();
+        product.product_name = req.body.product_name;
+        product.product_price = req.body.product_price;
+        product.product_unit = req.body.product_unit;
+        product.product_image = req.body.product_image;
+        product.product_description = req.body.product_description;
+        product.save(function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    });
+
+router.route('/products/:product_id')
+    .put(AuthService.checkAdminRole, function(req, res, next) {
+        Product.update({
+            _id: req.params.product_id
+        }, {
+            $set: {
+                product_name: req.body.product_name,
+                product_price: req.body.product_price,
+                product_unit: req.body.product_unit,
+                product_image: req.body.product_image,
+                product_description: req.body.product_description
+            }
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    })
+    .delete(AuthService.checkAdminRole, function(req, res, next) {
+        Product.remove({
+            _id:req.params.product_id
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    })
 module.exports = router;

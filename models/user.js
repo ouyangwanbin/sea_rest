@@ -14,6 +14,11 @@ var UserSchema = new Schema({
     id_receive_msg: {
         type: Boolean,
         default: false
+    },
+    role_id:{
+    	type:Number,
+    	default:0,
+    	select:false
     }
 });
 
