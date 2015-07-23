@@ -4,6 +4,7 @@ var User = require('../models/user');
 var Token = require('../models/token');
 var Product = require('../models/product');
 var Order = require('../models/order');
+var Place = require('../models/place');
 var bcrypt = require('bcrypt');
 var AuthService = require('../services/auth_service');
 
@@ -264,6 +265,7 @@ router.route('/orders')
         order.product_id = req.body.product_id;
         order.order_num = req.body.order_num;
         order.order_unit = req.body.order_unit;
+        order.place_id = req.body.place_id;
         order.order_note = req.body.order_note;
         order.save(function(err) {
             if (err) {
@@ -286,7 +288,8 @@ router.route('/orders/:order_id')
                 product_id: req.body.product_id,
                 order_num: req.body.order_num,
                 order_unit: req.body.order_unit,
-                order_note: req.body.order_note
+                order_note: req.body.order_note,
+                place_id: req.body.place_id
             }
         }, function(err) {
             if (err) {
@@ -321,6 +324,7 @@ router.route('/users/:user_id/orders')
         order.order_num = req.body.order_num;
         order.order_unit = req.body.order_unit;
         order.order_note = req.body.order_note;
+        order.place_id = req.body.place_id
         order.save(function(err) {
             if (err) {
                 res.status = 500;
@@ -371,6 +375,7 @@ router.route('/users/:user_id/orders/:order_id')
         }, {
             $set: {
                 product_id: req.body.product_id,
+                place_id: req.body.place_id,
                 order_num: req.body.order_num,
                 order_unit: req.body.order_unit,
                 order_note: req.body.order_note
@@ -388,7 +393,7 @@ router.route('/users/:user_id/orders/:order_id')
 
 /************************* Product API ***************************************/
 router.route('/products')
-    .get(function(req, res, next) {
+    .get(AuthService.checkToken, function(req, res, next) {
         Product.find({}, function(err, products) {
             if (err) {
                 res.status = 500;
@@ -444,7 +449,71 @@ router.route('/products/:product_id')
     })
     .delete(AuthService.checkAdminRole, function(req, res, next) {
         Product.remove({
-            _id:req.params.product_id
+            _id: req.params.product_id
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    })
+
+/************************* Place API ***************************************/
+router.route('/places')
+    .get(AuthService.checkToken, function(req, res, next) {
+        Place.find({}, function(err, places) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            result.data = {
+                places: places
+            }
+            res.json(result);
+        })
+    })
+    .post(AuthService.checkAdminRole, function(req, res, next) {
+        var place = new Place();
+        place.address = req.body.address;
+        place.time = req.body.time;
+        place.save(function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    });
+
+router.route('/places/:place_id')
+    .put(AuthService.checkAdminRole, function(req, res, next) {
+        Product.update({
+            _id: req.params.place_id
+        }, {
+            $set: {
+                address: req.body.address,
+                time: req.body.time
+            }
+        }, function(err) {
+            if (err) {
+                res.status = 500;
+                next(err);
+            }
+            var result = {};
+            result.status = "success";
+            res.json(result);
+        });
+    })
+    .delete(AuthService.checkAdminRole, function(req, res, next) {
+        Product.remove({
+            _id: req.params.place_id
         }, function(err) {
             if (err) {
                 res.status = 500;
