@@ -19,6 +19,10 @@ var ProductSchema = new Schema({
     },
     product_description: {
         type: String
+    },
+    product_quantity:{
+        type:Number,
+        required:true
     }
 
 });

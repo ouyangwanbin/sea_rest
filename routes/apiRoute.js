@@ -272,9 +272,23 @@ router.route('/orders')
                 res.status = 500;
                 next(err);
             }
-            var result = {};
-            result.status = "success";
-            res.json(result);
+            //update product quantity
+            Product.update({
+                _id: order.product_id
+            }, {
+                $inc: {
+                    product_quantity: -order.order_num
+                }
+            }, function(err) {
+                if (err) {
+                    res.status = 500;
+                    next(err);
+                }
+                var result = {};
+                result.status = "success";
+                res.json(result);
+            })
+
         });
     });
 //admin update user's order
@@ -296,23 +310,59 @@ router.route('/orders/:order_id')
                 res.status = 500;
                 next(err);
             }
-            var result = {};
-            result.status = "success";
-            res.json(result);
+            //update product quantity
+            Product.update({
+                _id: req.body.product_id
+            }, {
+                $inc: {
+                    product_quantity: -req.body.order_num
+                }
+            }, function(err) {
+                if (err) {
+                    res.status = 500;
+                    next(err);
+                }
+                var result = {};
+                result.status = "success";
+                res.json(result);
+            })
         });
     })
     //admin delete orders
     .delete(AuthService.checkAdminRole, function(req, res, next) {
-        Order.remove({
+        Order.findOne({
             _id: req.params.order_id
-        }, function(err) {
+        }, function(err, order) {
             if (err) {
                 res.status = 500;
                 next(err);
             }
-            var result = {};
-            result.status = "success";
-            res.json(result);
+            var order_num = order.order_num;
+            Order.remove({
+                _id: req.params.order_id,
+                user_id: req.params.user_id
+            }, function(err) {
+                if (err) {
+                    res.status = 500;
+                    next(err);
+                }
+                //update product quantity
+                Product.update({
+                    _id: order.product_id
+                }, {
+                    $inc: {
+                        product_quantity: order_num
+                    }
+                }, function(err) {
+                    if (err) {
+                        res.status = 500;
+                        next(err);
+                    }
+                    var result = {};
+                    result.status = "success";
+                    res.json(result);
+                })
+            })
         });
     });
 
@@ -330,9 +380,22 @@ router.route('/users/:user_id/orders')
                 res.status = 500;
                 next(err);
             }
-            var result = {};
-            result.status = "success";
-            res.json(result);
+            //update product quantity
+            Product.update({
+                _id: order.product_id
+            }, {
+                $inc: {
+                    product_quantity: -order.order_num
+                }
+            }, function(err) {
+                if (err) {
+                    res.status = 500;
+                    next(err);
+                }
+                var result = {};
+                result.status = "success";
+                res.json(result);
+            })
         });
     })
 
@@ -355,18 +418,40 @@ router.route('/users/:user_id/orders/:order_id')
         });
     })
     .delete(AuthService.checkToken, function(req, res, next) {
-        Order.remove({
-            _id: req.params.order_id,
-            user_id: req.params.user_id
-        }, function(err) {
+        Order.findOne({
+            _id: req.params.order_id
+        }, function(err, order) {
             if (err) {
                 res.status = 500;
                 next(err);
             }
-            var result = {};
-            result.status = "success";
-            res.json(result);
-        })
+            var order_num = order.order_num;
+            Order.remove({
+                _id: req.params.order_id,
+                user_id: req.params.user_id
+            }, function(err) {
+                if (err) {
+                    res.status = 500;
+                    next(err);
+                }
+                //update product quantity
+                Product.update({
+                    _id: order.product_id
+                }, {
+                    $inc: {
+                        product_quantity: order_num
+                    }
+                }, function(err) {
+                    if (err) {
+                        res.status = 500;
+                        next(err);
+                    }
+                    var result = {};
+                    result.status = "success";
+                    res.json(result);
+                })
+            })
+        });
     })
     .put(AuthService.checkToken, function(req, res, next) {
         Order.update({
@@ -385,9 +470,22 @@ router.route('/users/:user_id/orders/:order_id')
                 res.status = 500;
                 next(err);
             }
-            var result = {};
-            result.status = "success";
-            res.json(result);
+            //update product quantity
+            Product.update({
+                _id: req.body.product_id
+            }, {
+                $inc: {
+                    product_quantity: -req.body.order_num
+                }
+            }, function(err) {
+                if (err) {
+                    res.status = 500;
+                    next(err);
+                }
+                var result = {};
+                result.status = "success";
+                res.json(result);
+            })
         });
     })
 
@@ -414,6 +512,7 @@ router.route('/products')
         product.product_unit = req.body.product_unit;
         product.product_image = req.body.product_image;
         product.product_description = req.body.product_description;
+        product.product_quantity = req.body.product_quantity;
         product.save(function(err) {
             if (err) {
                 res.status = 500;
@@ -435,7 +534,8 @@ router.route('/products/:product_id')
                 product_price: req.body.product_price,
                 product_unit: req.body.product_unit,
                 product_image: req.body.product_image,
-                product_description: req.body.product_description
+                product_description: req.body.product_description,
+                product_quantity: req.body.product_quantity
             }
         }, function(err) {
             if (err) {
