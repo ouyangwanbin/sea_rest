@@ -37,7 +37,7 @@ router.route('/users')
                 return next(err);
             }
             var result = {};
-            result.status = "success";
+            result.status = "success"
             res.json(result);
         });
     });
@@ -110,7 +110,7 @@ router.route('/login')
                             delete user.password;
                             result.data = {
                                 user: user,
-                                token: token
+                                token: token.token
                             };
                             res.json(result);
                         })
@@ -393,7 +393,7 @@ router.route('/users/:user_id/orders/:order_id')
 
 /************************* Product API ***************************************/
 router.route('/products')
-    .get(AuthService.checkToken, function(req, res, next) {
+    .get(function(req, res, next) {
         Product.find({}, function(err, products) {
             if (err) {
                 res.status = 500;
