@@ -5,7 +5,7 @@ var Token = require('../models/token');
 var Product = require('../models/product');
 var Order = require('../models/order');
 var Place = require('../models/place');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var AuthService = require('../services/auth_service');
 
 //middleware to use fsor all requests.
