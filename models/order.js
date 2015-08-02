@@ -13,7 +13,7 @@ var OrderSchema = new Schema({
     place_id: {
         type: String,
         required: true
-    }
+    },
     order_date: {
         type: Date,
         default: Date.now
