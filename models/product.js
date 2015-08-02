@@ -7,7 +7,7 @@ var ProductSchema = new Schema({
         required: true,
     },
     product_price: {
-        type: String,
+        type: Number,
         required: true
     },
     product_unit: {

@@ -10,6 +10,10 @@ var OrderSchema = new Schema({
         type: String,
         required: true
     },
+    place_id: {
+        type: String,
+        required: true
+    }
     order_date: {
         type: Date,
         default: Date.now
@@ -25,7 +29,6 @@ var OrderSchema = new Schema({
     order_note: {
         type: String
     }
-
 });
 
 module.exports = mongoose.model('Order', OrderSchema);
