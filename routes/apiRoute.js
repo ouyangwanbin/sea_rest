@@ -270,7 +270,7 @@ router.route('/orders')
         order.save(function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             //update product quantity
             Product.update({
@@ -308,7 +308,7 @@ router.route('/orders/:order_id')
         }, function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             //update product quantity
             Product.update({
@@ -320,7 +320,7 @@ router.route('/orders/:order_id')
             }, function(err) {
                 if (err) {
                     res.status = 500;
-                    next(err);
+                    return next(err);
                 }
                 var result = {};
                 result.status = "success";
@@ -335,7 +335,7 @@ router.route('/orders/:order_id')
         }, function(err, order) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var order_num = order.order_num;
             Order.remove({
@@ -344,7 +344,7 @@ router.route('/orders/:order_id')
             }, function(err) {
                 if (err) {
                     res.status = 500;
-                    next(err);
+                    return next(err);
                 }
                 //update product quantity
                 Product.update({
@@ -378,7 +378,7 @@ router.route('/users/:user_id/orders')
         order.save(function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             //update product quantity
             Product.update({
@@ -389,6 +389,7 @@ router.route('/users/:user_id/orders')
                 }
             }, function(err) {
                 if (err) {
+                    console.log(err);
                     res.status = 500;
                     next(err);
                 }
@@ -407,7 +408,7 @@ router.route('/users/:user_id/orders/:order_id')
         }, function(err, order) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var result = {};
             result.status = "success";
@@ -423,7 +424,7 @@ router.route('/users/:user_id/orders/:order_id')
         }, function(err, order) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var order_num = order.order_num;
             Order.remove({
@@ -432,7 +433,7 @@ router.route('/users/:user_id/orders/:order_id')
             }, function(err) {
                 if (err) {
                     res.status = 500;
-                    next(err);
+                    return next(err);
                 }
                 //update product quantity
                 Product.update({
@@ -444,7 +445,7 @@ router.route('/users/:user_id/orders/:order_id')
                 }, function(err) {
                     if (err) {
                         res.status = 500;
-                        next(err);
+                        return next(err);
                     }
                     var result = {};
                     result.status = "success";
@@ -468,7 +469,7 @@ router.route('/users/:user_id/orders/:order_id')
         }, function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             //update product quantity
             Product.update({
@@ -480,7 +481,7 @@ router.route('/users/:user_id/orders/:order_id')
             }, function(err) {
                 if (err) {
                     res.status = 500;
-                    next(err);
+                    return next(err);
                 }
                 var result = {};
                 result.status = "success";
@@ -495,7 +496,7 @@ router.route('/products')
         Product.find({}, function(err, products) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var result = {};
             result.status = "success";
@@ -516,7 +517,7 @@ router.route('/products')
         product.save(function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var result = {};
             result.status = "success";
@@ -540,7 +541,7 @@ router.route('/products/:product_id')
         }, function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var result = {};
             result.status = "success";
@@ -553,7 +554,7 @@ router.route('/products/:product_id')
         }, function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var result = {};
             result.status = "success";
@@ -567,7 +568,7 @@ router.route('/places')
         Place.find({}, function(err, places) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var result = {};
             result.status = "success";
@@ -584,7 +585,7 @@ router.route('/places')
         place.save(function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var result = {};
             result.status = "success";
@@ -604,7 +605,7 @@ router.route('/places/:place_id')
         }, function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var result = {};
             result.status = "success";
@@ -617,7 +618,7 @@ router.route('/places/:place_id')
         }, function(err) {
             if (err) {
                 res.status = 500;
-                next(err);
+                return next(err);
             }
             var result = {};
             result.status = "success";
