@@ -563,7 +563,7 @@ router.route('/products/:product_id')
 
 /************************* Place API ***************************************/
 router.route('/places')
-    .get(AuthService.checkToken, function(req, res, next) {
+    .get(function(req, res, next) {
         Place.find({}, function(err, places) {
             if (err) {
                 res.status = 500;
