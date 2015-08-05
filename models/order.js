@@ -26,6 +26,10 @@ var OrderSchema = new Schema({
         type: String,
         required: true
     },
+    order_status:{
+        type:String,
+        default:"ordered"
+    },
     order_note: {
         type: String
     }

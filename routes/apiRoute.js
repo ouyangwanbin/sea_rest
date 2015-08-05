@@ -10,7 +10,10 @@ var AuthService = require('../services/auth_service');
 
 //middleware to use fsor all requests.
 router.use(function(req, res, next) {
-    next();
+    setTimeout(function() {
+        next();
+    }, 2000);
+
 });
 
 router.get('/', function(req, res) {
@@ -294,37 +297,39 @@ router.route('/orders')
 //admin update user's order
 router.route('/orders/:order_id')
     .put(AuthService.checkAdminRole, function(req, res, next) {
-        Order.update({
+        Order.findOne({
             _id: req.params.order_id
-        }, {
-            $set: {
-                user_id: req.body.user_id,
-                product_id: req.body.product_id,
-                order_num: req.body.order_num,
-                order_unit: req.body.order_unit,
-                order_note: req.body.order_note,
-                place_id: req.body.place_id
-            }
-        }, function(err) {
-            if (err) {
-                res.status = 500;
-                return next(err);
-            }
-            //update product quantity
-            Product.update({
-                _id: req.body.product_id
+        }, function(err, order) {
+            var origin_num = order.order_num;
+            var product_id = order.product_id;
+            Order.update({
+                _id: req.params.order_id
             }, {
-                $inc: {
-                    product_quantity: -req.body.order_num
+                $set: {
+                    order_num: req.body.order_num,
+                    order_status: req.body.order_status
                 }
             }, function(err) {
                 if (err) {
                     res.status = 500;
                     return next(err);
                 }
-                var result = {};
-                result.status = "success";
-                res.json(result);
+                //update product quantity
+                Product.update({
+                    _id: product_id
+                }, {
+                    $inc: {
+                        product_quantity: origin_num - req.body.order_num 
+                    }
+                }, function(err) {
+                    if (err) {
+                        res.status = 500;
+                        return next(err);
+                    }
+                    var result = {};
+                    result.status = "success";
+                    res.json(result);
+                })
             })
         });
     })
@@ -356,7 +361,7 @@ router.route('/orders/:order_id')
                 }, function(err) {
                     if (err) {
                         res.status = 500;
-                        next(err);
+                        return next(err);
                     }
                     var result = {};
                     result.status = "success";
@@ -391,7 +396,7 @@ router.route('/users/:user_id/orders')
                 if (err) {
                     console.log(err);
                     res.status = 500;
-                    next(err);
+                    return next(err);
                 }
                 var result = {};
                 result.status = "success";
@@ -455,37 +460,39 @@ router.route('/users/:user_id/orders/:order_id')
         });
     })
     .put(AuthService.checkToken, function(req, res, next) {
-        Order.update({
-            user_id: req.params.user_id,
+        Order.findOne({
             _id: req.params.order_id
-        }, {
-            $set: {
-                product_id: req.body.product_id,
-                place_id: req.body.place_id,
-                order_num: req.body.order_num,
-                order_unit: req.body.order_unit,
-                order_note: req.body.order_note
-            }
-        }, function(err) {
-            if (err) {
-                res.status = 500;
-                return next(err);
-            }
-            //update product quantity
-            Product.update({
-                _id: req.body.product_id
+        }, function(err, order) {
+            var origin_num = order.order_num;
+            var product_id = order.product_id;
+            Order.update({
+                user_id: req.params.user_id,
+                _id: req.params.order_id
             }, {
-                $inc: {
-                    product_quantity: -req.body.order_num
+                $set: {
+                    order_num: req.body.order_num
                 }
             }, function(err) {
                 if (err) {
                     res.status = 500;
                     return next(err);
                 }
-                var result = {};
-                result.status = "success";
-                res.json(result);
+                //update product quantity
+                Product.update({
+                    _id: product_id
+                }, {
+                    $inc: {
+                        product_quantity: origin_num - req.body.order_num 
+                    }
+                }, function(err) {
+                    if (err) {
+                        res.status = 500;
+                        return next(err);
+                    }
+                    var result = {};
+                    result.status = "success";
+                    res.json(result);
+                })
             })
         });
     })
