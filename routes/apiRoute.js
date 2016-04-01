@@ -8,13 +8,6 @@ var Place = require('../models/place');
 var bcrypt = require('bcryptjs');
 var AuthService = require('../services/auth_service');
 
-//middleware to use fsor all requests.
-router.use(function(req, res, next) {
-    setTimeout(function() {
-        next();
-    }, 2000);
-
-});
 
 router.get('/', function(req, res) {
     res.json({
