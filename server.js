@@ -1,10 +1,17 @@
 var express = require('express');
 var app = express();
+var config = require('./config');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
 //set up database
-mongoose.connect('mongodb://localhost:27017/sea');
+mongoose.connect(config.mongoURI[app.settings.env], function(err, res) {
+  if(err) {
+    console.log('Error connecting to the database. ' + err);
+  } else {
+    console.log('Connected to Database: ' + config.mongoURI[app.settings.env]);
+  }
+});
 
 
 //configure app to use bodyParser()
@@ -41,6 +48,8 @@ app.use(function( err, req, res, next ){
 
 
 
-app.listen(port);
-console.log('listening on: ' + port);
+app.listen(port , function(){
+	console.log( "Node server running on " + port );
+});
 
+module.exports = app;
