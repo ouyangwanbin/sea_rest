@@ -21,12 +21,11 @@ router.get('/', function(req, res) {
 /************************* User API ***************************************/
 router.post('/users', UserService.createUser);
 router.get('/users/:user_email', UserService.checkUserExist);
-router.post('/login', UserService.login);
-router.get('/forget-password', UserService.forgetPassword);
+router.post('/auth', UserService.authenticate);
 router.get('/users', [AuthService.checkAdminRole], UserService.getAllUsers);
-router.delete('/users/:user_id', [AuthService.checkAdminRole], UserService.removeUser);
 router.put('/users/:user_id', [AuthService.checkToken], UserService.updateUser);
-router.delete('/logout' , [AuthService.checkToken] , AuthService.removeToken );
+router.delete('/users/:user_id', [AuthService.checkAdminRole], UserService.removeUser);
+router.delete('/tokens/:user_id' , [AuthService.checkToken] , AuthService.removeToken );
 
 /************************* Order API ***************************************/
 router.post('/orders', [AuthService.checkAdminRole], OrderService.addOrder);
@@ -48,6 +47,6 @@ router.delete('/products/:product_id',[AuthService.checkAdminRole], ProductServi
 router.get('/places', PlaceService.getPlaces);
 router.post('/places', [AuthService.checkAdminRole] , PlaceService.addPlace);
 router.put('/places/:place_id', [AuthService.checkAdminRole] , PlaceService.updatePlace);
-router.put('/places/:place_id', [AuthService.checkAdminRole] , PlaceService.removePlace);
+router.delete('/places/:place_id', [AuthService.checkAdminRole] , PlaceService.removePlace);
 
 module.exports = router;

@@ -5,7 +5,7 @@ var PlaceService = {};
 PlaceService.getPlaces = function(req, res, next) {
     Place.find({}, function(err, places) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -23,7 +23,7 @@ PlaceService.addPlace = function(req, res, next) {
     place.time = req.body.time;
     place.save(function(err) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -42,7 +42,7 @@ PlaceService.updatePlace = function(req, res, next) {
         }
     }, function(err) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -56,7 +56,7 @@ PlaceService.removePlace = function(req, res, next) {
         _id: req.params.place_id
     }, function(err) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};

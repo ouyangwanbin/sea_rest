@@ -5,7 +5,7 @@ var ProductService = {};
 ProductService.getProducts = function(req, res, next) {
     Product.find({}, function(err, products) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -27,7 +27,7 @@ ProductService.addProduct = function(req, res, next) {
     product.product_quantity = req.body.product_quantity;
     product.save(function(err) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -50,7 +50,7 @@ ProductService.updateProduct = function(req, res, next) {
         }
     }, function(err) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -64,7 +64,7 @@ ProductService.removeProduct = function(req, res, next) {
         _id: req.params.product_id
     }, function(err) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};

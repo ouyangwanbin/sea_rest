@@ -14,7 +14,7 @@ OrderService.addOrder = function(req, res, next) {
     order.order_note = req.body.order_note;
     order.save(function(err) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         //update product quantity
@@ -26,7 +26,7 @@ OrderService.addOrder = function(req, res, next) {
             }
         }, function(err) {
             if (err) {
-                res.status = 500;
+                res.statusCode = 500;
                 next(err);
             }
             var result = {};
@@ -52,7 +52,7 @@ OrderService.updateOrder = function(req, res, next) {
             }
         }, function(err) {
             if (err) {
-                res.status = 500;
+                res.statusCode = 500;
                 return next(err);
             }
             //update product quantity
@@ -64,7 +64,7 @@ OrderService.updateOrder = function(req, res, next) {
                 }
             }, function(err) {
                 if (err) {
-                    res.status = 500;
+                    res.statusCode = 500;
                     return next(err);
                 }
                 var result = {};
@@ -80,7 +80,7 @@ OrderService.removeOrder = function(req, res, next) {
         _id: req.params.order_id
     }, function(err, order) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var order_num = order.order_num;
@@ -89,7 +89,7 @@ OrderService.removeOrder = function(req, res, next) {
             user_id: req.params.user_id
         }, function(err) {
             if (err) {
-                res.status = 500;
+                res.statusCode = 500;
                 return next(err);
             }
             //update product quantity
@@ -101,7 +101,7 @@ OrderService.removeOrder = function(req, res, next) {
                 }
             }, function(err) {
                 if (err) {
-                    res.status = 500;
+                    res.statusCode = 500;
                     return next(err);
                 }
                 var result = {};
@@ -122,7 +122,7 @@ OrderService.addUserOrder = function(req, res, next) {
     order.place_id = req.body.place_id
     order.save(function(err) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         //update product quantity
@@ -135,7 +135,7 @@ OrderService.addUserOrder = function(req, res, next) {
         }, function(err) {
             if (err) {
                 console.log(err);
-                res.status = 500;
+                res.statusCode = 500;
                 return next(err);
             }
             var result = {};
@@ -151,7 +151,7 @@ OrderService.findUserOrder = function(req, res, next) {
         user_id: req.params.user_id
     }, function(err, order) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -168,7 +168,7 @@ OrderService.removeUserOrder = function(req, res, next) {
         _id: req.params.order_id
     }, function(err, order) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var order_num = order.order_num;
@@ -177,7 +177,7 @@ OrderService.removeUserOrder = function(req, res, next) {
             user_id: req.params.user_id
         }, function(err) {
             if (err) {
-                res.status = 500;
+                res.statusCode = 500;
                 return next(err);
             }
             //update product quantity
@@ -189,7 +189,7 @@ OrderService.removeUserOrder = function(req, res, next) {
                 }
             }, function(err) {
                 if (err) {
-                    res.status = 500;
+                    res.statusCode = 500;
                     return next(err);
                 }
                 var result = {};
@@ -215,7 +215,7 @@ OrderService.updateUserOrder = function(req, res, next) {
             }
         }, function(err) {
             if (err) {
-                res.status = 500;
+                res.statusCode = 500;
                 return next(err);
             }
             //update product quantity
@@ -227,7 +227,7 @@ OrderService.updateUserOrder = function(req, res, next) {
                 }
             }, function(err) {
                 if (err) {
-                    res.status = 500;
+                    res.statusCode = 500;
                     return next(err);
                 }
                 var result = {};

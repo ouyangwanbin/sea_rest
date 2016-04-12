@@ -17,7 +17,7 @@ UserService.createUser = function(req, res, next) {
     user.save(function(err) {
         console.log(err);
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -33,7 +33,7 @@ UserService.checkUserExist = function(req, res) {
     }, function(err, count) {
         console.log(err);
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -45,18 +45,18 @@ UserService.checkUserExist = function(req, res) {
     })
 }
 
-UserService.login = function(req, res, next) {
+UserService.authenticate = function(req, res, next) {
     //check user and password
     User.findOne({
         email: req.body.email
     }, function(err, user) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
 
         if (!user) {
-            res.status = 400;
+            res.statusCode = 400;
             return next(new Error('incorrect user / password'));
         } else {
             if (bcrypt.compareSync(req.body.password, user.password)) {
@@ -65,7 +65,7 @@ UserService.login = function(req, res, next) {
                     user_id: user._id
                 }, function(err) {
                     if (err) {
-                        res.status = 500;
+                        res.statusCode = 500;
                         return next(err);
                     }
                     //generate token
@@ -79,7 +79,7 @@ UserService.login = function(req, res, next) {
                     token.expired_date = time + 1000 * 60 * 30; // token will be expired in 30 minutes
                     token.save(function(err) {
                         if (err) {
-                            res.status = 500;
+                            res.statusCode = 500;
                             return next(err);
                         }
                         var result = {};
@@ -96,10 +96,8 @@ UserService.login = function(req, res, next) {
                     })
 
                 })
-
-
             } else {
-                res.status = 400;
+                res.statusCode = 400;
                 return next(new Error('incorrect user / password'));
             }
         }
@@ -111,11 +109,11 @@ UserService.forgetPassword = function(req, res, next) {
         email: req.params.user_email
     }, function(err, user) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         if (!user) {
-            res.status = 400;
+            res.statusCode = 400;
             return next(new Error('Can not find user'));
         }
         //generate new password and update the user model

@@ -21,14 +21,15 @@ AuthService.checkToken = function(req, res, next) {
         user_id: user_id,
         token: token
     };
+    console.log(condition);
     Token.findOne(condition, function(err, token) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         if (!token) {
             var error = new Error("token is invalid");
-            res.status = 401;
+            res.statusCode = 401;
             return next(error);
         }
         var now = Date.now();
@@ -36,7 +37,7 @@ AuthService.checkToken = function(req, res, next) {
         //check if the token expires
         if ((now - token.expired_date.getTime()) > 1000 * 60 * 30) {
             console.log('token expired');
-            res.status = 401;
+            res.statusCode = 401;
             var error = new Error("token has been expired");
             return next(error);
         }
@@ -49,7 +50,7 @@ AuthService.checkToken = function(req, res, next) {
             }
         }, function(err) {
             if (err) {
-                res.status = 500;
+                res.statusCode = 500;
                 next(err);
             }
             next();
@@ -58,21 +59,19 @@ AuthService.checkToken = function(req, res, next) {
 }
 
 AuthService.checkAdminRole = function(req, res, next) {
-    var admin_id = req.body.admin_id;
     var token = req.headers.token;
 
     var condition = {
-        user_id: admin_id,
         token: token
     };
     Token.findOne(condition, function(err, token) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         if (!token) {
             var error = new Error("token is invalid");
-            res.status = 401;
+            res.statusCode = 401;
             return next(error);
         }
         var now = Date.now();
@@ -80,24 +79,24 @@ AuthService.checkAdminRole = function(req, res, next) {
         User.findOne({
             _id: token.user_id
         }, '+role_id', function(err, user) {
+
             if (err) {
-                res.status = 500;
+                res.statusCode = 500;
                 return next(err);
             }
             if (!user) {
-                res.status = 401;
+                res.statusCode = 401;
                 return next(new Error('Can not find admin user'));
             }
             if (user.role_id !== 1) {
-                res.status = 401;
+                res.statusCode = 401;
                 return next(new Error('The user is not admin'));
             }
             var now = Date.now();
 
             //check if the token expires
             if ((now - token.expired_date.getTime()) > 1000 * 60 * 30) {
-                console.log('token expired');
-                res.status = 401;
+                res.statusCode = 401;
                 var error = new Error("token has been expired");
                 return next(error);
             }
@@ -109,7 +108,7 @@ AuthService.checkAdminRole = function(req, res, next) {
                 }
             }, function(err) {
                 if (err) {
-                    res.status = 500;
+                    res.statusCode = 500;
                     return next(err);
                 }
                 next();
@@ -121,10 +120,10 @@ AuthService.checkAdminRole = function(req, res, next) {
 
 AuthService.removeToken = function(req, res, next) {
     Token.remove({
-        'user_id': req.body.user_id
+        'user_id': req.params.user_id
     }, function(err) {
         if (err) {
-            res.status = 500;
+            res.statusCode = 500;
             return next(err);
         }
         var result = {};
@@ -132,8 +131,5 @@ AuthService.removeToken = function(req, res, next) {
         res.json(result);
     });
 }
-
-
-
 
 module.exports = AuthService;
