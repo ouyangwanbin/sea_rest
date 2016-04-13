@@ -1,5 +1,5 @@
 var AuthService = require('../services/auth_service');
-
+var Product = require('../models/product');
 var ProductService = {};
 
 ProductService.getProducts = function(req, res, next) {
@@ -37,18 +37,29 @@ ProductService.addProduct = function(req, res, next) {
 }
 
 ProductService.updateProduct = function(req, res, next) {
+    var update = {};
+    update.$set = {};
+    if( req.body.product_name ){
+        update.$set.product_name = req.body.product_name;
+    }
+    if( req.body.product_price ){
+        update.$set.product_price = req.body.product_price;
+    }
+    if( req.body.product_unit ){
+         update.$set.product_unit = req.body.product_unit;
+    }
+    if( req.body.product_image ){
+        update.$set.product_image = req.body.product_image;
+    }
+    if( req.body.product_description ){
+        update.$set.product_description = req.body.product_description;
+    }
+    if( req.body.product_quantity ){
+        update.$set.product_quantity = req.body.product_quantity;
+    }
     Product.update({
         _id: req.params.product_id
-    }, {
-        $set: {
-            product_name: req.body.product_name,
-            product_price: req.body.product_price,
-            product_unit: req.body.product_unit,
-            product_image: req.body.product_image,
-            product_description: req.body.product_description,
-            product_quantity: req.body.product_quantity
-        }
-    }, function(err) {
+    }, update, function(err) {
         if (err) {
             res.statusCode = 500;
             return next(err);

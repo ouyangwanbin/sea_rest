@@ -12,8 +12,10 @@ var adminToken;
 var userToken;
 var userId;
 var adminId;
+var productId;
 
 var server = supertest.agent("http://localhost:3005");
+
 
 describe("create a user test", function() {
     it("should create a user", function(done) {
@@ -116,6 +118,152 @@ describe("get all users", function() {
                 done();
             });
     });
+});
+
+describe("create a product", function() {
+    it("should not add, because it does not add any token on request header", function(done) {
+        var product = {
+            product_name: 'fish',
+            product_price: 15.20,
+            product_unit: 'lb',
+            product_image: 'fish.jpg',
+            product_description: 'this is good',
+            product_quantity: 500
+        };
+        server
+            .post('/api/products')
+            .send(product)
+            .end(function(err, res) {
+                res.status.should.equal(401);
+                res.body.status.should.equal("fail");
+                done();
+            });
+    });
+
+    it("should not add, because it is not an admin token", function(done) {
+        var product = {
+            product_name: 'fish',
+            product_price: 15.20,
+            product_unit: 'lb',
+            product_image: 'fish.jpg',
+            product_description: 'this is good',
+            product_quantity: 500
+        };
+        server
+            .post('/api/products')
+            .set('token', userToken)
+            .send(product)
+            .end(function(err, res) {
+                res.status.should.equal(401);
+                res.body.status.should.equal("fail");
+                done();
+            });
+    });
+
+    it("should add, because it is an admin token", function(done) {
+        var product = {
+            product_name: 'shrimp',
+            product_price: 12.20,
+            product_unit: 'lb',
+            product_image: 'shrimp.jpg',
+            product_description: 'this is good',
+            product_quantity: 200
+        };
+        server
+            .post('/api/products')
+            .set('token', adminToken)
+            .send(product)
+            .end(function(err, res) {
+                res.status.should.equal(200);
+                res.body.status.should.equal("success");
+                done();
+            });
+    });
+});
+
+describe("get all products information", function() {
+    it("should show all the products information without any authentication", function(done) {
+        server
+            .get('/api/products')
+            .end(function(err, res) {
+                res.status.should.equal(200);
+                res.body.status.should.equal("success");
+                productId = res.body.data.products[0]._id;
+                done();
+            });
+    });
+});
+
+describe("update product" , function( ){
+	it("should not update, because it does not add any token on request header",function(done){
+		server
+			.put("/api/products/" + productId)
+			.end(function(err, res){
+                res.status.should.equal(401);
+                res.body.status.should.equal('fail');
+                done();
+			})
+	});
+
+	it("should not update, because the token is not admin token",function(done){
+		server
+			.put("/api/products/" + productId)
+			.set('token', userToken)
+			.end(function(err, res){
+                res.status.should.equal(401);
+                res.body.status.should.equal('fail');
+                done();
+			})
+	});
+
+	it("should update, because the token is an admin token",function(done){
+		var update = {
+			product_name:"updatedName"
+		}
+		server
+			.put("/api/products/" + productId)
+			.set('token', adminToken)
+			.send(update)
+			.end(function(err, res){
+                res.status.should.equal(200);
+                res.body.status.should.equal('success');
+                done();
+			});
+	});	
+});
+
+describe("delete product" , function( ){
+	it("should not delete, because it does not add any token on request header",function(done){
+		server
+			.delete("/api/products/" + productId)
+			.end(function(err, res){
+                res.status.should.equal(401);
+                res.body.status.should.equal('fail');
+                done();
+			})
+	});
+	
+	it("should not delete, because the token is not admin token",function(done){
+		server
+			.delete("/api/products/" + productId)
+			.set('token', userToken)
+			.end(function(err, res){
+                res.status.should.equal(401);
+                res.body.status.should.equal('fail');
+                done();
+			})
+	});
+	
+	it("should delete, because the token is an admin token",function(done){
+		server
+			.delete("/api/products/" + productId)
+			.set('token', adminToken)
+			.end(function(err, res){
+                res.status.should.equal(200);
+                res.body.status.should.equal('success');
+                done();
+			})
+	});	
 });
 
 describe("update user", function() {
