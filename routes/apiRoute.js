@@ -22,31 +22,28 @@ router.get('/', function(req, res) {
 router.post('/users', UserService.createUser);
 router.get('/users/:user_email', UserService.checkUserExist);
 router.post('/auth', UserService.authenticate);
-router.get('/users', [AuthService.checkAdminRole], UserService.getAllUsers);
+router.get('/users', [AuthService.checkToken , AuthService.checkAdminRole ], UserService.getAllUsers);
 router.put('/users/:user_id', [AuthService.checkToken], UserService.updateUser);
-router.delete('/users/:user_id', [AuthService.checkAdminRole], UserService.removeUser);
+router.delete('/users/:user_id', [AuthService.checkToken, AuthService.checkAdminRole], UserService.removeUser);
 router.delete('/tokens/:user_id' , [AuthService.checkToken] , AuthService.removeToken );
 
 /************************* Order API ***************************************/
-router.post('/orders', [AuthService.checkAdminRole], OrderService.addOrder);
-router.put('/orders/:order_id',[AuthService.checkAdminRole] , OrderService.updateOrder );
-router.delete('/orders/:order_id',[AuthService.checkAdminRole] , OrderService.removeOrder );
-router.post('/users/:user_id/orders',[AuthService.checkToken] , OrderService.addUserOrder );
-router.get('/users/:user_id/orders/:order_id',[AuthService.checkToken] , OrderService.findUserOrder );
-router.delete('/users/:user_id/orders/:order_id',[AuthService.checkToken] , OrderService.removeUserOrder );
-router.put('/users/:user_id/orders/:order_id',[AuthService.checkToken] , OrderService.updateUserOrder );
+router.post('/users/:user_id/orders',[AuthService.checkToken] , OrderService.addOrder );
+router.get('/users/:user_id/orders/:order_id',[AuthService.checkToken] , OrderService.findOrder );
+router.delete('/users/:user_id/orders/:order_id',[AuthService.checkToken] , OrderService.removeOrder );
+router.put('/users/:user_id/orders/:order_id',[AuthService.checkToken] , OrderService.updateOrder );
 
 /************************* Product API ***************************************/
 router.get('/products', ProductService.getProducts);
-router.post('/products',[AuthService.checkAdminRole], ProductService.addProduct);
-router.put('/products/:product_id',[AuthService.checkAdminRole], ProductService.updateProduct );
-router.delete('/products/:product_id',[AuthService.checkAdminRole], ProductService.removeProduct );
+router.post('/products',[AuthService.checkToken , AuthService.checkAdminRole], ProductService.addProduct);
+router.put('/products/:product_id',[AuthService.checkToken, AuthService.checkAdminRole], ProductService.updateProduct );
+router.delete('/products/:product_id',[AuthService.checkToken, AuthService.checkAdminRole], ProductService.removeProduct );
 
 
 /************************* Place API ***************************************/
 router.get('/places', PlaceService.getPlaces);
-router.post('/places', [AuthService.checkAdminRole] , PlaceService.addPlace);
-router.put('/places/:place_id', [AuthService.checkAdminRole] , PlaceService.updatePlace);
-router.delete('/places/:place_id', [AuthService.checkAdminRole] , PlaceService.removePlace);
+router.post('/places', [AuthService.checkToken] , PlaceService.addPlace);
+router.put('/places/:place_id', [AuthService.checkToken] , PlaceService.updatePlace);
+router.delete('/places/:place_id', [AuthService.checkToken] , PlaceService.removePlace);
 
 module.exports = router;

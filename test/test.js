@@ -305,6 +305,7 @@ describe("remove token" , function(){
 			.delete("/api/tokens/" + userId)
 			.set('token',userToken)
 			.end(function( err, res ){
+				console.log(res.body);
 				res.status.should.equal(200);
 				res.body.status.should.equal('success');
 				done( );
@@ -329,6 +330,7 @@ describe("delete user", function() {
             .delete("/api/users/" + userId)
             .set('token', adminToken)
             .end(function(err, res) {
+            	console.log( res.body );
                 res.status.should.equal(200);
                 res.body.status.should.equal('success');
                 done();
