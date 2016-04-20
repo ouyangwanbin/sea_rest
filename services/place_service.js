@@ -1,5 +1,5 @@
 var AuthService = require('../services/auth_service');
-
+var Place = require('../models/place');
 var PlaceService = {};
 
 PlaceService.getPlaces = function(req, res, next) {
@@ -33,14 +33,17 @@ PlaceService.addPlace = function(req, res, next) {
 }
 
 PlaceService.updatePlace = function(req, res, next) {
-    Product.update({
+    var update = {};
+    update.$set = {};
+    if( req.body.address ){
+        update.$set.address = req.body.address;
+    }
+    if( req.body.time ){
+        update.$set.time = req.body.time;
+    }
+    Place.update({
         _id: req.params.place_id
-    }, {
-        $set: {
-            address: req.body.address,
-            time: req.body.time
-        }
-    }, function(err) {
+    }, update, function(err) {
         if (err) {
             res.statusCode = 500;
             return next(err);
@@ -52,7 +55,7 @@ PlaceService.updatePlace = function(req, res, next) {
 }
 
 PlaceService.removePlace = function(req, res, next) {
-    Product.remove({
+    Place.remove({
         _id: req.params.place_id
     }, function(err) {
         if (err) {

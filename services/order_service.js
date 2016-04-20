@@ -11,9 +11,10 @@ OrderService.addOrder = function(req, res, next) {
     order.order_num = req.body.order_num;
     order.order_unit = req.body.order_unit;
     order.order_note = req.body.order_note;
-    order.place_id = req.body.place_id
+    order.place_id = req.body.place_id;
     order.save(function(err) {
         if (err) {
+            console.log(err);
             res.statusCode = 500;
             return next(err);
         }
@@ -38,10 +39,15 @@ OrderService.addOrder = function(req, res, next) {
 }
 
 OrderService.findOrder = function(req, res, next) {
-    Order.findOne({
-        _id: req.params.order_id,
-        user_id: req.params.user_id
-    }, function(err, order) {
+    var condition = {};
+    if (req.params.order_id) {
+        condition._id = req.params.order_id;
+    }
+    if (req.params.user_id) {
+        condition.user_id = req.params.user_id;
+    }
+
+    Order.find(condition, function(err, orders) {
         if (err) {
             res.statusCode = 500;
             return next(err);
@@ -49,7 +55,7 @@ OrderService.findOrder = function(req, res, next) {
         var result = {};
         result.status = "success";
         result.data = {
-            order: order
+            orders: orders
         }
         res.json(result);
     });
@@ -93,29 +99,31 @@ OrderService.removeOrder = function(req, res, next) {
 }
 
 OrderService.updateOrder = function(req, res, next) {
-    Order.findOne({
+    var update = {};
+    update.$set = {};
+    if (req.body.order_num) {
+        update.$set.order_num = req.body.order_num;
+    }
+    if (req.body.place_id) {
+        update.$set.place_id = req.body.place_id;
+    }
+    if (req.body.order_note) {
+        update.$set.order_note = req.body.order_note;
+    }
+    Order.update({
         _id: req.params.order_id
-    }, function(err, order) {
-        var origin_num = order.order_num;
-        var product_id = order.product_id;
-        Order.update({
-            user_id: req.params.user_id,
-            _id: req.params.order_id
-        }, {
-            $set: {
-                order_num: req.body.order_num
-            }
-        }, function(err) {
-            if (err) {
-                res.statusCode = 500;
-                return next(err);
-            }
+    }, update, function(err) {
+        if (err) {
+            res.statusCode = 500;
+            return next(err);
+        }
+        if (req.body.order_num) {
             //update product quantity
             Product.update({
-                _id: product_id
+                _id: req.body.product_id
             }, {
                 $inc: {
-                    product_quantity: origin_num - req.body.order_num
+                    product_quantity: -req.body.order_num
                 }
             }, function(err) {
                 if (err) {
@@ -126,8 +134,8 @@ OrderService.updateOrder = function(req, res, next) {
                 result.status = "success";
                 res.json(result);
             })
-        })
-    });
+        }
+    })
 }
 
 

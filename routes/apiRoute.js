@@ -1,11 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/user');
-var Token = require('../models/token');
-var Product = require('../models/product');
-var Order = require('../models/order');
-var Place = require('../models/place');
-var bcrypt = require('bcryptjs');
 var AuthService = require('../services/auth_service');
 var UserService = require('../services/user_service');
 var OrderService = require('../services/order_service');
@@ -28,10 +22,10 @@ router.delete('/users/:user_id', [AuthService.checkToken, AuthService.checkAdmin
 router.delete('/tokens/:user_id' , [AuthService.checkToken] , AuthService.removeToken );
 
 /************************* Order API ***************************************/
-router.post('/users/:user_id/orders',[AuthService.checkToken] , OrderService.addOrder );
-router.get('/users/:user_id/orders/:order_id',[AuthService.checkToken] , OrderService.findOrder );
-router.delete('/users/:user_id/orders/:order_id',[AuthService.checkToken] , OrderService.removeOrder );
-router.put('/users/:user_id/orders/:order_id',[AuthService.checkToken] , OrderService.updateOrder );
+router.post('/orders/:user_id',[AuthService.checkToken] , OrderService.addOrder );
+router.get('/orders/:user_id/:order_id?',[AuthService.checkToken] , OrderService.findOrder );
+router.put('/orders/:user_id/:order_id',[AuthService.checkToken] , OrderService.updateOrder );
+router.delete('/orders/:user_id/:order_id',[AuthService.checkToken] , OrderService.removeOrder );
 
 /************************* Product API ***************************************/
 router.get('/products', ProductService.getProducts);
@@ -42,8 +36,8 @@ router.delete('/products/:product_id',[AuthService.checkToken, AuthService.check
 
 /************************* Place API ***************************************/
 router.get('/places', PlaceService.getPlaces);
-router.post('/places', [AuthService.checkToken] , PlaceService.addPlace);
-router.put('/places/:place_id', [AuthService.checkToken] , PlaceService.updatePlace);
-router.delete('/places/:place_id', [AuthService.checkToken] , PlaceService.removePlace);
+router.post('/places', [AuthService.checkToken, AuthService.checkAdminRole] , PlaceService.addPlace);
+router.put('/places/:place_id', [AuthService.checkToken, AuthService.checkAdminRole] , PlaceService.updatePlace);
+router.delete('/places/:place_id', [AuthService.checkToken, AuthService.checkAdminRole] , PlaceService.removePlace);
 
 module.exports = router;
