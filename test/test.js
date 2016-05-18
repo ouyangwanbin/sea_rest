@@ -19,6 +19,25 @@ var orderId;
 var server = supertest.agent("http://localhost:3005");
 
 
+//for testing , need to create a admin user
+/*
+describe("create a admin user test", function() {
+    it("should create a user", function(done) {
+        var user = {
+            email: 'wouyang@opentext.com',
+            password: 'abc123!@#'
+        }
+        server
+            .post("/api/users")
+            .send(user)
+            .end(function(err, res) {
+                res.body.status.should.equal('success');
+                done();
+            });
+    });
+});
+*/
+
 describe("create a user test", function() {
     it("should create a user", function(done) {
         var user = {
@@ -71,7 +90,7 @@ describe("authenticate user", function() {
     it("should get the admin token", function(done) {
         var user = {
             email: 'wouyang@opentext.com',
-            password: 'abc123'
+            password: 'abc123!@#'
         };
         server
             .post("/api/auth")
@@ -82,7 +101,6 @@ describe("authenticate user", function() {
                 expect(res.body.data.token).exist;
                 adminToken = res.body.data.token;
                 adminId = res.body.data.user._id;
-                console.log("adminToken: " + adminToken);
                 done();
             });
     });
