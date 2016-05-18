@@ -1,2 +1,2 @@
 # sea_rest
-rest api for sea
+rest api for go2fishseafood
