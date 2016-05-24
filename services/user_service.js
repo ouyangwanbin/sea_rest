@@ -29,9 +29,9 @@ UserService.createUser = function(req, res, next) {
 UserService.checkUserExist = function(req, res) {
     var user = new User();
     User.count({
-        email: req.params.user_email
+        email: req.params.user_email,
+        role_id: req.params.role_id
     }, function(err, count) {
-        console.log(err);
         if (err) {
             res.statusCode = 500;
             return next(err);

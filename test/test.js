@@ -20,7 +20,7 @@ var server = supertest.agent("http://localhost:3005");
 
 
 //for testing , need to create a admin user
-/*
+
 describe("create a admin user test", function() {
     it("should create a user", function(done) {
         var user = {
@@ -36,7 +36,7 @@ describe("create a admin user test", function() {
             });
     });
 });
-*/
+
 
 describe("create a user test", function() {
     it("should create a user", function(done) {
@@ -57,8 +57,9 @@ describe("create a user test", function() {
 describe("check existance of user", function() {
     it("should get the user", function(done) {
         var email = 'ouyangwanbin@gmail.com';
+        var role_id = 0;
         server
-            .get("/api/users/" + email)
+            .get("/api/users/" + email + "/" + role_id)
             .end(function(err, res) {
                 res.status.should.equal(200);
                 res.body.status.should.equal('success');

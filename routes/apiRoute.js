@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
 
 /************************* User API ***************************************/
 router.post('/users', UserService.createUser);
-router.get('/users/:user_email', UserService.checkUserExist);
+router.get('/users/:user_email/:role_id', UserService.checkUserExist);
 router.post('/auth', UserService.authenticate);
 router.get('/users', [AuthService.checkToken , AuthService.checkAdminRole ], UserService.getAllUsers);
 router.put('/users/:user_id', [AuthService.checkToken], UserService.updateUser);
